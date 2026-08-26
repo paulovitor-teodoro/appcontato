@@ -10,35 +10,35 @@ class ListaContatosPage extends StatelessWidget {
     final List<Map<String,dynamic>> contatos =[
       {
         'iniciais':'PV',
-        'cor': Colors.grey,
+        'cor': const Color(0xFF797979),
         'nome': 'Paulo Vitor',
         'telefone': '(14) 99776-7555',
         'favorito': true
       },
       {
         'iniciais':'BL',
-        'cor': Colors.black,
+        'cor':const Color(0xFF000000),
         'nome': 'Bruno Lima',
         'telefone': '(14) 99123-4567',
         'favorito': false,
       },
       {
         'iniciais':'CM',
-        'cor': Colors.orange,
+        'cor':const Color(0xFFf26e22),
         'nome': 'Carla Mendes',
         'telefone': '(21) 997654-3210',
         'favorito': false,
       },
       {
         'iniciais':'AS',
-        'cor': Colors.blue,
+        'cor':const Color(0xFF0018b5),
         'nome': 'Ana Souza',
         'telefone': '(11) 98765-4321',
         'favorito': true,
       },
       {
         'iniciais':'ET',
-        'cor': Colors.purple,
+        'cor':const Color(0xFFa020f0),
         'nome': 'Elisa Torres',
         'telefone': '(17) 99999-5678',
         'favorito': false,
