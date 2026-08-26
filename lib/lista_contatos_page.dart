@@ -3,46 +3,47 @@ import 'package:flutter/material.dart';
 class ListaContatosPage extends StatelessWidget {
   const ListaContatosPage({super.key});
 
-  final List<Map<String, dynamic>> contatos = const [
-    {
-      'nome': 'Ana Souza',
-      'telefone': '(11) 98765-4321',
-      'iniciais': 'AS',
-      'cor': Colors.blue,
-      'favorito': true,
-    },
-    {
-      'nome': 'Bruno Lima',
-      'telefone': '(14) 99123-4567',
-      'iniciais': 'BL',
-      'cor': Colors.blue,
-      'favorito': false,
-    },
-    {
-      'nome': 'Carla Mendes',
-      'telefone': '(21) 97654-3210',
-      'iniciais': 'CM',
-      'cor': Colors.orange,
-      'favorito': true,
-    },
-    {
-      'nome': 'Diego Alves',
-      'telefone': '(19) 98888-1234',
-      'iniciais': 'DA',
-      'cor': Colors.green,
-      'favorito': false,
-    },
-    {
-      'nome': 'Elisa Torres',
-      'telefone': '(17) 99999-5678',
-      'iniciais': 'ET',
-      'cor': Colors.purple,
-      'favorito': false,
-    },
-  ];
+  
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String,dynamic>> contatos =[
+      {
+        'iniciais':'PV',
+        'cor': Colors.grey,
+        'nome': 'Paulo Vitor',
+        'telefone': '(14) 99776-7555',
+        'favorito': true
+      },
+      {
+        'iniciais':'BL',
+        'cor': Colors.black,
+        'nome': 'Bruno Lima',
+        'telefone': '(14) 99123-4567',
+        'favorito': false,
+      },
+      {
+        'iniciais':'CM',
+        'cor': Colors.orange,
+        'nome': 'Carla Mendes',
+        'telefone': '(21) 997654-3210',
+        'favorito': false,
+      },
+      {
+        'iniciais':'AS',
+        'cor': Colors.blue,
+        'nome': 'Ana Souza',
+        'telefone': '(11) 98765-4321',
+        'favorito': true,
+      },
+      {
+        'iniciais':'ET',
+        'cor': Colors.purple,
+        'nome': 'Elisa Torres',
+        'telefone': '(17) 99999-5678',
+        'favorito': false,
+      },
+    ];
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -61,7 +62,6 @@ class ListaContatosPage extends StatelessWidget {
         itemCount: contatos.length,
         itemBuilder: (context, index) {
           final contato = contatos[index];
-
           return Card(
             elevation: 2,
             margin: const EdgeInsets.only(bottom: 10),
@@ -85,7 +85,7 @@ class ListaContatosPage extends StatelessWidget {
 
               title: Text(
                 contato['nome'],
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -94,7 +94,7 @@ class ListaContatosPage extends StatelessWidget {
               subtitle: Text(
                 contato['telefone'],
                 style: const TextStyle(
-                  color: Colors.grey,
+                color: Colors.grey,
                 ),
               ),
 
