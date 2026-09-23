@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'cadastro_contato_page.dart';
+import 'sobre_page.dart';
 
 class ListaContatosPage extends StatefulWidget {
   const ListaContatosPage({super.key});
@@ -10,7 +11,18 @@ class ListaContatosPage extends StatefulWidget {
 }
 
 class _ListaContatosPageState extends State<ListaContatosPage> {
-  List<Map<String, dynamic>> contatos = [];
+  List<Map<String, dynamic>> contatos = [{}];
+  String filtroSelecionado = 'Todos';
+
+  List<Map<String, dynamic>> get contatosFiltrados {
+    if(filtroSelecionado == 'Favoritos') {
+      return contatos.where((contato) => contato['favorito'] == 1).toList();
+    }
+    if(filtroSelecionado == 'Não Favoritos') {
+      return contatos.where((contato) => contato['favorito'] == 0).toList();
+    }
+    return contatos;
+  }
 
   @override
   void initState() {
@@ -41,16 +53,62 @@ class _ListaContatosPageState extends State<ListaContatosPage> {
         backgroundColor: Colors.blue,
       ),
 
-      body: ListView.builder(
+     body: Column(
+  children: [
+    Padding(
+      padding: const EdgeInsets.all(12),
+      child: DropdownButtonFormField<String>(
+        initialValue: filtroSelecionado,
+        decoration: const InputDecoration(
+          labelText: 'Filtrar contatos',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.filter_list),
+        ),
+        items: const [
+          DropdownMenuItem(
+            value: 'Todos',
+            child: Text('Todos os Contatos'),
+          ),
+          DropdownMenuItem(
+            value: 'Favoritos',
+            child: Text('Favoritos'),
+          ),
+          DropdownMenuItem(
+            value: 'Não Favoritos',
+            child: Text('Não Favoritos'),
+          ),
+        ],
+        onChanged: (valor) {
+          if (valor != null) {
+            setState(() {
+              filtroSelecionado = valor;
+            });
+          }
+        },
+      ),
+    ),
+
+    Expanded(
+      child: ListView.builder(
         padding: const EdgeInsets.all(12),
-        itemCount: contatos.length,
+        itemCount: contatosFiltrados.length,
         itemBuilder: (context, index) {
-          final contato = contatos[index];
+          final contato = contatosFiltrados[index];
 
           return Card(
             elevation: 2,
             margin: const EdgeInsets.only(bottom: 10),
             child: ListTile(
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CadastroContatoPage(contato: contato),
+                  ),
+                );
+
+                carregarContatos();
+              },
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 6,
@@ -60,7 +118,9 @@ class _ListaContatosPageState extends State<ListaContatosPage> {
                 radius: 23,
                 backgroundColor: Colors.blue,
                 child: Text(
-                  contato['nome'][0],
+                  contato['nome'] != null && contato['nome'].isNotEmpty
+                      ? contato['nome'][0].toUpperCase()
+                      : '?',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -69,33 +129,63 @@ class _ListaContatosPageState extends State<ListaContatosPage> {
               ),
 
               title: Text(
-                contato['nome'],
+                contato['nome'] ?? 'Sem Nome',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
 
-              subtitle: Text(
-                contato['telefone'],
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
+              subtitle: Row(
+                children: [
+                  Text(
+                    contato['telefone'] ?? 'Sem Telefone',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    contato['categoria'] ?? 'Sem Categoria',
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ]
               ),
+              trailing: Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    Icon(
+      contato['favorito'] == 1
+          ? Icons.star
+          : Icons.star_border,
+      color: contato['favorito'] == 1
+          ? Colors.orange
+          : Colors.grey,
+      size: 28,
+    ),
 
-              trailing: Icon(
-                contato['favorito'] == 1
-                    ? Icons.star
-                    : Icons.star_border,
-                color: contato['favorito'] == 1
-                    ? Colors.orange
-                    : Colors.grey,
-                size: 30,
-              ),
+    IconButton(
+      icon: const Icon(
+        Icons.delete,
+        color: Colors.red,
+      ),
+      onPressed: () {
+        confirmarExclusao(contato);
+      },
+    ),
+  ],
+),
             ),
           );
+        
         },
       ),
+    ),
+  ],
+),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () => adicionarContato(),
@@ -118,4 +208,48 @@ class _ListaContatosPageState extends State<ListaContatosPage> {
 
     carregarContatos();
   }
+
+  void confirmarExclusao(Map<String, dynamic> contato) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Excluir contato'),
+
+        content: Text(
+          'Deseja realmente excluir ${contato['nome'] ?? 'este contato'}?',
+        ),
+
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancelar'),
+          ),
+
+          TextButton(
+            onPressed: () async {
+              await DatabaseHelper.excluirContato(
+                contato['id'],
+              );
+
+              if (!mounted) return;
+
+              Navigator.pop(context);
+
+              carregarContatos();
+            },
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
 }

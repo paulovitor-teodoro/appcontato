@@ -16,7 +16,7 @@ class DatabaseHelper {
 
     return openDatabase(
       caminho,
-      version: 1,
+      version: 2,
       onCreate: (db, version) {
         return db.execute('''
           CREATE TABLE contatos(
@@ -26,8 +26,16 @@ class DatabaseHelper {
             nome TEXT,
             telefone TEXT,
             favorito INTEGER
+            categoria TEXT
           )
         ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) {
+        if (oldVersion < 2) {
+          db.execute('''
+            ALTER TABLE contatos ADD COLUMN categoria TEXT
+          ''');
+        }
       },
     );
   }
@@ -39,19 +47,45 @@ class DatabaseHelper {
   }
 
   static Future<void> inserirContato(
-    Map<String, dynamic> contato,
-  ) async {
-    final db = await DatabaseHelper.database;
+  Map<String, dynamic> contato,
+) async {
+  final db = await DatabaseHelper.database;
 
-    await db.insert(
-      'contatos',
-      {
-        'iniciais': contato['iniciais'],
-        'cor': contato['cor'],
-        'nome': contato['nome'],
-        'telefone': contato['telefone'],
-        'favorito': contato['favorito'] == 1 ? 1 : 0,
-      },
-    );
-  }
+  await db.insert(
+    'contatos',
+    {
+      'nome': contato['nome'],
+      'telefone': contato['telefone'],
+      'favorito': contato['favorito'],
+    },
+  );
+}
+
+static Future<void> excluirContato(int id) async {
+  final db = await DatabaseHelper.database;
+
+  await db.delete(
+    'contatos',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
+
+  static Future<void> atualizarContato(
+  Map<String, dynamic> contato,
+) async {
+  final db = await DatabaseHelper.database;
+
+  await db.update(
+    'contatos',
+    {
+      'nome': contato['nome'],
+      'telefone': contato['telefone'],
+      'favorito': contato['favorito'],
+      'categoria': contato['categoria'],
+    },
+    where: 'id = ?',
+    whereArgs: [contato['id']],
+  );
+ }
 }
